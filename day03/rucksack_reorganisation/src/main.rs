@@ -112,10 +112,7 @@ fn check_rucksack_groups(rucksacks: &Vec<Rucksack>, group_size: usize) -> u64 {
 ///
 fn find_badge(rucksacks: &[Rucksack]) -> u64 {
     for item in (rucksacks[0].compartment_a.clone() + &rucksacks[0].compartment_b).chars() {
-        let in_2 = rucksacks[1].find_item(&item);
-        let in_3 = rucksacks[2].find_item(&item);
-
-        if in_2 && in_3 {
+        if rucksacks[1].find_item(&item) && rucksacks[2].find_item(&item) {
             return rucksacks[0].get_item_weight(&item);
         };
     }
@@ -126,10 +123,7 @@ fn find_badge(rucksacks: &[Rucksack]) -> u64 {
 /// Entrypoint
 ///
 fn main() {
-    let data = fs::read_to_string("data.txt").unwrap();
-    let rucksacks = generate_rucksacks(&data);
-    let priority_total: u64 = rucksacks.iter().map(|x| x.get_rucksack_priority()).sum();
-    println!("Part 1: {}", priority_total);
-    let new_total = check_rucksack_groups(&rucksacks, 3);
-    println!("Part 2: {}", new_total);
+    let rucksacks = generate_rucksacks(&fs::read_to_string("data.txt").unwrap());
+    println!("Part 1: {}", rucksacks.iter().map(|x| x.get_rucksack_priority()).sum::<u64>());
+    println!("Part 2: {}", check_rucksack_groups(&rucksacks, 3));
 }
