@@ -1,9 +1,8 @@
-/// 
+///
 /// AOC 2022 Day 2
 ///
 use std::fs;
-
-/// 
+///
 /// Outcome enum representing the outcome state of a game.
 ///
 /// The corresponding points associated with the outcome are set behind the state.
@@ -14,8 +13,7 @@ enum Outcome {
     LOSS = 0,
     DRAW = 3,
 }
-
-/// 
+///
 /// Shape enum representing the hand shapes used in the game.
 ///
 /// The corresponding points associated with the shape are set behind the state.
@@ -27,8 +25,7 @@ enum Shape {
     Paper = 2,
     Scissors = 3,
 }
-
-/// 
+///
 /// Game struct holding the game state. The game state is the shape that each of the players has
 /// chosen.
 ///
@@ -38,7 +35,7 @@ struct Game {
 }
 
 impl Game {
-    /// 
+    ///
     /// The first part of the day task. Used for calculating the total score when X, Y, and Z
     /// correlate to Shapes.
     ///
@@ -58,10 +55,12 @@ impl Game {
             _ => panic!("Unknown input"),
         };
 
-        Game { user: rhs, opponent: lhs }
+        Game {
+            user: rhs,
+            opponent: lhs,
+        }
     }
-
-    /// 
+    ///
     /// The second part of the day task. Used for calculating the total score when X, Y, and Z
     /// correlate to the Outcome required for a game.
     ///
@@ -84,26 +83,24 @@ impl Game {
 
         let user_input = match rhs {
             Outcome::DRAW => lhs.clone(),
-            Outcome::WIN => {
-                match lhs {
-                    Shape::Rock => Shape::Paper,
-                    Shape::Paper => Shape::Scissors,
-                    Shape::Scissors => Shape::Rock,
-                }
+            Outcome::WIN => match lhs {
+                Shape::Rock => Shape::Paper,
+                Shape::Paper => Shape::Scissors,
+                Shape::Scissors => Shape::Rock,
             },
-            Outcome::LOSS => {
-                match lhs {
-                    Shape::Rock => Shape::Scissors,
-                    Shape::Paper => Shape::Rock,
-                    Shape::Scissors => Shape::Paper
-                }
+            Outcome::LOSS => match lhs {
+                Shape::Rock => Shape::Scissors,
+                Shape::Paper => Shape::Rock,
+                Shape::Scissors => Shape::Paper,
             },
         };
 
-        Game { user: user_input, opponent: lhs }
+        Game {
+            user: user_input,
+            opponent: lhs,
+        }
     }
-
-    /// 
+    ///
     /// Calculate the number of points to award the outcome of a game. The outcome is determined by
     /// comparing the point differences in each of the players shape.
     ///
@@ -118,8 +115,7 @@ impl Game {
         }
     }
 }
-
-/// 
+///
 /// Entrypoint
 ///
 fn main() {
@@ -127,19 +123,27 @@ fn main() {
     println!("Part 1 Score: {}", calculate_score1(&data));
     println!("Part 2 Score: {}", calculate_score2(&data));
 }
-
-/// 
+///
 /// Calculate the overall score across any number of games separated by a new line character in the
 /// data.
 ///
 fn calculate_score1(data: &str) -> u64 {
-    data.lines().map(|x| { let y = Game::new1(&x); y.outcome() as u64 + y.user as u64 }).sum()
+    data.lines()
+        .map(|x| {
+            let y = Game::new1(&x);
+            y.outcome() as u64 + y.user as u64
+        })
+        .sum()
 }
-
-/// 
+///
 /// Calculate the overall score across any number of games separated by a new line character in the
 /// data.
 ///
 fn calculate_score2(data: &str) -> u64 {
-    data.lines().map(|x| { let y = Game::new2(&x); y.outcome() as u64 + y.user as u64 }).sum()
+    data.lines()
+        .map(|x| {
+            let y = Game::new2(&x);
+            y.outcome() as u64 + y.user as u64
+        })
+        .sum()
 }
