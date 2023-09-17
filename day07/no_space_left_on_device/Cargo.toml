@@ -1,0 +1,10 @@
+[package]
+name = "no_space_left_on_device"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+indextree = "4.6.0"
+rayon = "1.7.0"
