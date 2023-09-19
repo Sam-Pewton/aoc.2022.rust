@@ -1,7 +1,8 @@
-/// 
-/// AOC 2022 Day 8 - WIP -> Task 1 finished
 ///
-use std::fs;
+/// AOC 2022 Day 8
+///
+use std::{fs, thread};
+use std::sync::{Arc, Mutex};
 
 ///
 /// Transpose a 2D vector
@@ -47,6 +48,82 @@ fn check_row(data_row: &mut Vec<u32>, tracker_row: &mut Vec<bool>) {
 }
 
 ///
+/// Check scenic scores
+///
+/// This multithreaded function calculates every scenic score and keeps track of the one which
+/// scored the highest through a mutex lock. The highest score is returned once all of the threads
+/// have finished execution.
+///
+/// I would have preferred to have one lined the calculations of up, down, left, and right..
+///
+fn check_scenic_scores(data: &Vec<Vec<u32>>) -> usize {
+    // the data is immutable, the max_trees is mutable
+    let safe_data = Arc::new(data.clone());
+    let max_trees = Arc::new(Mutex::new(0));
+
+    // A new thread for every row
+    let mut handles = vec![];
+    for i in 0..data.len() {
+        let safe = Arc::clone(&safe_data);
+        let max_trees = Arc::clone(&max_trees);
+        let handle = thread::spawn(move || {
+            let a = &safe[i];
+            for j in 0..a.len() {
+                let mut left = (0..j)
+                    .into_iter()
+                    .map(|x| a[x] >= a[j])
+                    .rev()
+                    .map_while(|x| if !x { Some(x) } else { None })
+                    .count();
+                left = if left < j { left + 1 } else { left };
+
+                let mut up = (0..i)
+                    .into_iter()
+                    .map(|x| safe[x][j] >= a[j])
+                    .rev()
+                    .map_while(|x| if !x { Some(x) } else { None })
+                    .count();
+                up = if up < i { up + 1 } else { up };
+
+                let mut right = (j + 1..a.len())
+                    .into_iter()
+                    .map(|x| a[x] >= a[j])
+                    .map_while(|x| if !x { Some(x) } else { None })
+                    .count();
+                right = if right + j + 1 < a.len() {
+                    right + 1
+                } else {
+                    right
+                };
+
+                let mut down = (i + 1..safe.len())
+                    .into_iter()
+                    .map(|x| safe[x][j] >= a[j])
+                    .map_while(|x| if !x { Some(x) } else { None })
+                    .count();
+                down = if down + i + 1 < safe.len() {
+                    down + 1
+                } else {
+                    down
+                };
+
+                let trees = left * down * right * up;
+                let mut c = max_trees.lock().unwrap();
+                if trees > *c {
+                    *c = trees;
+                }
+            }
+        });
+        handles.push(handle);
+    }
+
+    for i in handles {
+        i.join().unwrap();
+    }
+    *max_trees.clone().lock().unwrap()
+}
+
+///
 /// Entrypoint
 ///
 fn main() {
@@ -67,4 +144,6 @@ fn main() {
             .map(|row| row.iter().map(|x| *x as u32).sum::<u32>())
             .sum::<u32>()
     );
+    data_vec = transpose(data_vec);
+    println!("Part 2: {}", check_scenic_scores(&data_vec));
 }
