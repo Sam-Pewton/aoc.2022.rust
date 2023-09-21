@@ -1,5 +1,5 @@
 /// 
-/// AOC 2022 Day 9 -> WIP
+/// AOC 2022 Day 9
 ///
 use std::fs;
 use std::ops::Sub;
@@ -141,7 +141,7 @@ impl Rope {
     }
 
     /// 
-    /// Move the trailing knot based on the leading knot
+    /// Move the trailing knot based on the leading knots position
     ///
     fn knot_mover(&mut self, leading: usize, trailing: usize) {
         let lead = &self.knots[leading].position;
